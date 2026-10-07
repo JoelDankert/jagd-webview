@@ -13,3 +13,7 @@ Install Android SDK Platform 36 and a JDK compatible with Android Gradle Plugin 
 The debug-signed APK is written to `app/build/outputs/apk/debug/app-debug.apk`. A copy of the tested debug APK is also committed at `apk/Jagd-WebView-debug.apk` as requested. It is a debug build, not a Play Store release. Keep `local.properties` and signing keys out of Git.
 
 The app requires an internet connection and a valid HTTPS certificate for the web app. No certificate errors are bypassed.
+
+## App icon
+
+The launcher reticle is adapted from [Lucide's Crosshair icon](https://github.com/lucide-icons/lucide/blob/main/icons/crosshair.svg) (ISC License). Original SVG and its license notice are in `icons/` and `LICENSE-ICON.txt`.
