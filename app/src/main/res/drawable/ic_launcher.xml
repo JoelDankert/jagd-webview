@@ -8,12 +8,12 @@
     <!-- Lucide Crosshair (ISC), converted from SVG circle and lines. -->
     <path android:fillColor="@android:color/transparent"
         android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
+        android:strokeWidth="1.7"
         android:strokeLineCap="round"
-        android:pathData="M12,2 A10,10 0,1 1,12,22 A10,10 0,1 1,12,2" />
+        android:pathData="M12,5 A7,7 0,1 1,12,19 A7,7 0,1 1,12,5" />
     <path android:fillColor="@android:color/transparent"
         android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
+        android:strokeWidth="1.7"
         android:strokeLineCap="round"
-        android:pathData="M22,12 L18,12 M6,12 L2,12 M12,6 L12,2 M12,22 L12,18" />
+        android:pathData="M19,12 L16.2,12 M7.8,12 L5,12 M12,7.8 L12,5 M12,19 L12,16.2" />
 </vector>
