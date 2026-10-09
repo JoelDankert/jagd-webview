@@ -26,10 +26,16 @@ public final class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (webView != null && webView.canGoBack()) {
-            webView.goBack();
-        } else {
+        if (webView == null) {
             super.onBackPressed();
+            return;
         }
+        // WebView.canGoBack() may be false for same-document SPA history.
+        // Ask the page first; fall back to normal WebView history only at the app root.
+        webView.evaluateJavascript("Boolean(window.jagdHandleBack && window.jagdHandleBack())", handled -> {
+            if ("true".equals(handled)) return;
+            if (webView.canGoBack()) webView.goBack();
+            else MainActivity.super.onBackPressed();
+        });
     }
 }
