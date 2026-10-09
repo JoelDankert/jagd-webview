@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import android.content.Context;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
+import android.window.OnBackInvokedCallback;
 import java.lang.reflect.Field;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +17,7 @@ public class JagdBackTest {
         boolean navigable = true;
         boolean wentBack = false;
         boolean askedWebApp = false;
-        String webAppReply = "false";
+        String webAppReply = "null";
         HistoryWebView(Context context) { super(context); }
         @Override public boolean canGoBack() { return navigable; }
         @Override public void goBack() { wentBack = true; }
@@ -53,16 +54,47 @@ public class JagdBackTest {
         assertFalse(webView.wentBack);
     }
 
-    @Test public void androidBackExitsWhenThereIsNoHistory() throws Exception {
+    @Test public void modernAndroidBackCallbackUsesTheSameInAppNavigation() throws Exception {
         MainActivity activity = Robolectric.buildActivity(MainActivity.class).setup().get();
         HistoryWebView webView = new HistoryWebView(activity);
         webView.navigable = false;
+        webView.webAppReply = "true";
+        Field viewField = MainActivity.class.getDeclaredField("webView");
+        viewField.setAccessible(true);
+        viewField.set(activity, webView);
+        Field callbackField = MainActivity.class.getDeclaredField("modernBackCallback");
+        callbackField.setAccessible(true);
+        OnBackInvokedCallback callback = (OnBackInvokedCallback) callbackField.get(activity);
+        assertNotNull("Android 13+ needs a registered callback", callback);
+        callback.onBackInvoked();
+        assertTrue(webView.askedWebApp);
+        assertFalse(activity.isFinishing());
+    }
+
+    @Test public void androidBackAtRootDoesNotUseOldWebViewEntries() throws Exception {
+        MainActivity activity = Robolectric.buildActivity(MainActivity.class).setup().get();
+        HistoryWebView webView = new HistoryWebView(activity);
+        webView.webAppReply = "false";
+        Field field = MainActivity.class.getDeclaredField("webView");
+        field.setAccessible(true);
+        field.set(activity, webView);
+
+        activity.onBackPressed();
+        assertFalse("SPA root must not jump to a previous document", webView.wentBack);
+        assertFalse(activity.isFinishing());
+    }
+
+    @Test public void androidBackAtRootKeepsAppOpen() throws Exception {
+        MainActivity activity = Robolectric.buildActivity(MainActivity.class).setup().get();
+        HistoryWebView webView = new HistoryWebView(activity);
+        webView.navigable = false;
+        webView.webAppReply = "false";
         Field field = MainActivity.class.getDeclaredField("webView");
         field.setAccessible(true);
         field.set(activity, webView);
 
         activity.onBackPressed();
         assertFalse(webView.wentBack);
-        assertTrue(activity.isFinishing());
+        assertFalse("Android Back at root must leave the app open", activity.isFinishing());
     }
 }
